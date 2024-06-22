@@ -26,8 +26,16 @@ public class TaskService {
         this.taskRepository = taskRepository;
     }
 
-    public List<Task> getAllTasks() {
-        return taskRepository.findAll();
+    public ResponseEntity<String> getAllTasks() {
+        List<Task> tasks = taskRepository.findAll();
+        return tasks.stream()
+                .map(Task::toString)
+                .reduce((t1, t2) -> t1 + "\n" + t2)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> {
+                    log.warn("No tasks found");
+                    return ResponseEntity.noContent().build();
+                });
     }
 
     public ResponseEntity<String> createTask(Task task) {
@@ -75,7 +83,6 @@ public class TaskService {
                 .orElseGet(() -> ResponseEntity.badRequest().body("Task not found"));
     }
 
-    //Make a method to update Task Priority
     public ResponseEntity<String> updateTaskPriority(Long id, String newPriority) {
         return taskRepository.findById(id)
                 .map(task -> {
@@ -86,5 +93,4 @@ public class TaskService {
                 })
                 .orElseGet(() -> ResponseEntity.badRequest().body("Task not found"));
     }
-
 }
