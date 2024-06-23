@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/tasks")
 public class TaskController {
@@ -18,9 +20,12 @@ public class TaskController {
     private TaskService taskService;
 
     @GetMapping
-    public ResponseEntity<String> getAllTasks() {
+    public ResponseEntity<List<Task>> getAllTasks() {
         log.info("Getting all tasks");
-        return taskService.getAllTasks();
+        List<Task> tasks = taskService.getAllTasks();
+        return ResponseEntity.noContent().build().hasBody()
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.ok(tasks);
     }
 
     @PostMapping

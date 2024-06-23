@@ -34,16 +34,8 @@ public class TaskService {
         this.taskRepository = taskRepository;
     }
 
-    public ResponseEntity<String> getAllTasks() {
-        List<Task> tasks = taskRepository.findAll();
-        return tasks.stream()
-                .map(Task::toString)
-                .reduce((t1, t2) -> t1 + "\n" + t2)
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> {
-                    log.warn("No tasks found");
-                    return ResponseEntity.noContent().build();
-                });
+    public List<Task> getAllTasks() {
+        return taskRepository.findAll();
     }
 
     public ResponseEntity<String> createTask(String name, Boolean done, String created, String priority) {
