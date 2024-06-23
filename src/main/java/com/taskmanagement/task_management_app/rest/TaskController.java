@@ -24,20 +24,29 @@ public class TaskController {
     }
 
     @PostMapping
-    public ResponseEntity<String> createTask(@RequestBody Task task) {
-        log.info("Creating task: " + task);
-        return taskService.createTask(task);
+    public ResponseEntity<String> createNewTask(@RequestParam String name,
+                                                @RequestParam boolean done,
+                                                @RequestParam String created,
+                                                @RequestParam String priority
+                                                ) {
+        log.info("Creating task: {}, with priority: {}, done: {}, created: {}", name, priority, done, created);
+        return taskService.createTask(name, done, created, priority);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<String> updateTask(@PathVariable Long id, @RequestBody Task updatedTask) {
-        log.info("Updating task with: " + id + " to: " + updatedTask);
-        return taskService.updateTask(id, updatedTask);
+    public ResponseEntity<String> updateTaskById(@PathVariable Long id,
+                                                 @RequestParam String name,
+                                                 @RequestParam boolean done,
+                                                 @RequestParam String created,
+                                                 @RequestParam String priority
+                                                ) {
+        log.info("Updating task with id={}, to task with name={}, done={}, created={} and priority={}", id, name, done, created, priority);
+        return taskService.updateTaskById(id, name, done, created, priority);
     }
 
     @PutMapping("/updateTaskName")
-    public ResponseEntity<String> updateTaskName(@RequestParam Long id, @RequestParam String newName) {
-        log.info("Updating task name of task with: " + id + " to: " + newName);
+    public ResponseEntity<String> updateTaskNameById(@RequestParam Long id, @RequestParam String newName) {
+        log.info("Updating task name of task with id={} to: {}", id, newName);
 
         return (newName == null || newName.isEmpty())
                 ? logAndReturnError("New name cannot be empty")
@@ -47,14 +56,14 @@ public class TaskController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteTask(@PathVariable Long id) {
-        log.warn("The following task will be deleted: " + id);
-        return taskService.deleteTask(id);
+    public ResponseEntity<String> deleteTaskById(@PathVariable Long id) {
+        log.warn("The following task will be deleted: {}", id);
+        return taskService.deleteTaskById(id);
     }
 
     @PutMapping("/updateTaskPriority")
     public ResponseEntity<String> updateTaskPriority(@RequestParam Long id, @RequestParam String newPriority) {
-        log.info("Updating task priority of task with: " + id + " to: " + newPriority);
+        log.info("Updating task priority of task with id={} to: {}", id, newPriority);
 
         return (newPriority == null || newPriority.isEmpty())
                 ? logAndReturnError("New priority cannot be empty")
