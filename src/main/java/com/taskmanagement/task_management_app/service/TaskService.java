@@ -1,5 +1,8 @@
 package com.taskmanagement.task_management_app.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 import com.taskmanagement.task_management_app.model.Priority;
 import com.taskmanagement.task_management_app.model.Task;
 import com.taskmanagement.task_management_app.repository.TaskRepository;
@@ -8,7 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -38,7 +41,7 @@ public class TaskService {
         return taskRepository.findAll();
     }
 
-    public ResponseEntity<String> createTask(String name, Boolean done, String created, String priority) {
+    public HttpStatus createTask(String name, Boolean done, String created, String priority) {
         Task newTask = Task.builder()
                 .name(name)
                 .done(done)
@@ -53,12 +56,16 @@ public class TaskService {
         return existingTask
                 .map(task -> {
                     log.warn("Task already exists: task={}", task);
-                    return ResponseEntity.badRequest().body("Task already exists");
+                    return HttpStatus.BAD_REQUEST;
                 })
-                .orElseGet(() -> ResponseEntity.ok(saveTask(name, done, created, priority)));
+                .orElseGet(() -> {
+                    taskRepository.save(newTask);
+                    log.warn("Task created successfully: task={}", newTask);
+                    return HttpStatus.CREATED;
+                });
     }
 
-    public ResponseEntity<String> updateTaskById(Long id, String name, boolean done, String created, String priority) {
+    public HttpStatus updateTaskById(Long id, String name, boolean done, String created, String priority) {
         Task updatedTask = Task.builder()
                 .name(name)
                 .done(done)
@@ -70,52 +77,53 @@ public class TaskService {
                     BeanUtils.copyProperties(updatedTask, task, "id");
                     taskRepository.save(task);
                     log.info("Task updated successfully: id={}, updatedTask={}", id, updatedTask);
-                    return ResponseEntity.ok("Task updated successfully");
+                    return HttpStatus.OK;
                 })
-                .orElseGet(() -> ResponseEntity.badRequest().body("Task not found"));
+                .orElseGet(() -> {
+                    log.warn("Task not found: id={}", id);
+                    return HttpStatus.NOT_FOUND;
+                });
     }
 
-    public ResponseEntity<String> deleteTaskById(Long id) {
+    public HttpStatus deleteTaskById(Long id) {
         return taskRepository.findById(id)
                 .map(task -> {
                     taskRepository.delete(task);
                     log.warn("Task deleted successfully: id={}", id);
-                    return ResponseEntity.ok("Task deleted successfully");
+                    return HttpStatus.OK;
                 })
-                .orElseGet(() -> ResponseEntity.badRequest().body("Task not found"));
+                .orElseGet(() -> {
+                    log.warn("Task not found: id={}", id);
+                    return HttpStatus.NOT_FOUND;
+                });
     }
 
-    public ResponseEntity<String> updateTaskName(Long id, String newName) {
+    public HttpStatus updateTaskName(Long id, String newName) {
         return taskRepository.findById(id)
                 .map(task -> {
                     task.setName(newName);
                     taskRepository.save(task);
                     log.warn("Task updated successfully: id={}, newName={}", id, newName);
-                    return ResponseEntity.ok("Task updated successfully");
+                    return HttpStatus.OK;
                 })
-                .orElseGet(() -> ResponseEntity.badRequest().body("Task not found"));
+                .orElseGet(() -> {
+                    log.warn("Task not found: id={}", id);
+                    return HttpStatus.NOT_FOUND;
+                });
     }
 
-    public ResponseEntity<String> updateTaskPriority(Long id, String newPriority) {
+    public HttpStatus updateTaskPriority(Long id, String newPriority) {
         return taskRepository.findById(id)
                 .map(task -> {
                     task.setPriority(Priority.valueOf(newPriority));
                     taskRepository.save(task);
                     log.warn("Task updated successfully: id={}, newPriority={}", id, newPriority);
-                    return ResponseEntity.ok("Task updated successfully");
+                    return HttpStatus.OK;
                 })
-                .orElseGet(() -> ResponseEntity.badRequest().body("Task not found"));
-    }
-
-    private String saveTask(String name, Boolean done, String created, String priority) {
-        taskRepository.save(Task.builder()
-                .name(name)
-                .done(done)
-                .created(toInstant(created))
-                .priority(Priority.valueOf(priority))
-                .build());
-        log.warn("Task created successfully: task={}", name);
-        return "Task created successfully";
+                .orElseGet(() -> {
+                    log.warn("Task not found: id={}", id);
+                    return HttpStatus.NOT_FOUND;
+                });
     }
 
     private Instant toInstant(String created) {

@@ -5,6 +5,7 @@ import com.taskmanagement.task_management_app.service.TaskService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,56 +30,66 @@ public class TaskController {
     }
 
     @PostMapping
-    public ResponseEntity<String> createNewTask(@RequestParam String name,
+    public ResponseEntity<Task> createNewTask(@RequestParam String name,
                                                 @RequestParam boolean done,
                                                 @RequestParam String created,
                                                 @RequestParam String priority
                                                 ) {
         log.info("Creating task: {}, with priority: {}, done: {}, created: {}", name, priority, done, created);
-        return taskService.createTask(name, done, created, priority);
+        return ResponseEntity.status(
+                taskService.createTask(name, done, created, priority))
+                .build();
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<String> updateTaskById(@PathVariable Long id,
+    public ResponseEntity<Task> updateTaskById(@PathVariable Long id,
                                                  @RequestParam String name,
                                                  @RequestParam boolean done,
                                                  @RequestParam String created,
                                                  @RequestParam String priority
                                                 ) {
         log.info("Updating task with id={}, to task with name={}, done={}, created={} and priority={}", id, name, done, created, priority);
-        return taskService.updateTaskById(id, name, done, created, priority);
+        return ResponseEntity.status(
+                taskService.updateTaskById(id, name, done, created, priority))
+                .build();
     }
 
     @PutMapping("/updateTaskName")
-    public ResponseEntity<String> updateTaskNameById(@RequestParam Long id, @RequestParam String newName) {
+    public ResponseEntity<Task> updateTaskNameById(@RequestParam Long id, @RequestParam String newName) {
         log.info("Updating task name of task with id={} to: {}", id, newName);
 
         return (newName == null || newName.isEmpty())
                 ? logAndReturnError("New name cannot be empty")
                 : (id == null)
                 ? logAndReturnError("Task ID cannot be empty")
-                : taskService.updateTaskName(id, newName);
+                : ResponseEntity.status(
+                        taskService.updateTaskName(id, newName))
+                .build();
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteTaskById(@PathVariable Long id) {
+    public ResponseEntity<Task> deleteTaskById(@PathVariable Long id) {
         log.warn("The following task will be deleted: {}", id);
-        return taskService.deleteTaskById(id);
+        return ResponseEntity.status(
+                taskService.deleteTaskById(id))
+                .build();
     }
 
     @PutMapping("/updateTaskPriority")
-    public ResponseEntity<String> updateTaskPriority(@RequestParam Long id, @RequestParam String newPriority) {
+    public ResponseEntity<Task> updateTaskPriority(@RequestParam Long id, @RequestParam String newPriority) {
         log.info("Updating task priority of task with id={} to: {}", id, newPriority);
 
         return (newPriority == null || newPriority.isEmpty())
                 ? logAndReturnError("New priority cannot be empty")
                 : (id == null)
                 ? logAndReturnError("Task ID cannot be empty")
-                : taskService.updateTaskPriority(id, newPriority);
+                : ResponseEntity.status(
+                        taskService.updateTaskPriority(id, newPriority))
+                .build();
     }
 
-    private ResponseEntity<String> logAndReturnError(String errorMessage) {
+    private ResponseEntity<Task> logAndReturnError(String errorMessage) {
         log.error(errorMessage);
-        return ResponseEntity.badRequest().body(errorMessage);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 }
