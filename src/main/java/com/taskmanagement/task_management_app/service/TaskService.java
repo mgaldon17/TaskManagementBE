@@ -1,8 +1,5 @@
 package com.taskmanagement.task_management_app.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
 import com.taskmanagement.task_management_app.model.Priority;
 import com.taskmanagement.task_management_app.model.Task;
 import com.taskmanagement.task_management_app.repository.TaskRepository;
