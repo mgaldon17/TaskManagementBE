@@ -83,6 +83,7 @@ public class TaskControllerTest {
     }
 
     @Test
+    @DisplayName("Update task by id")
     public void updateTaskByIdTest() throws Exception {
         when(taskService.updateTaskById(anyLong(), anyString(), anyBoolean(), anyString(), anyString()))
                 .thenReturn(HttpStatus.OK);
@@ -100,6 +101,7 @@ public class TaskControllerTest {
     }
 
     @Test
+    @DisplayName("Update task name by id")
     public void updateTaskNameByIdTest() throws Exception {
         when(taskService.updateTaskName(anyLong(), anyString())).thenReturn(HttpStatus.OK);
 
@@ -114,6 +116,7 @@ public class TaskControllerTest {
     }
 
     @Test
+    @DisplayName("Delete task by id")
     public void deleteTaskByIdTest() throws Exception {
         when(taskService.deleteTaskById(anyLong())).thenReturn(HttpStatus.OK);
 
@@ -126,6 +129,7 @@ public class TaskControllerTest {
     }
 
     @Test
+    @DisplayName("Update task priority")
     public void updateTaskPriorityTest() throws Exception {
         when(taskService.updateTaskPriority(anyLong(), anyString())).thenReturn(HttpStatus.OK);
 
@@ -140,6 +144,7 @@ public class TaskControllerTest {
     }
 
     @Test
+    @DisplayName("Update task name with empty name")
     public void updateTaskPriorityWithEmptyPriority() throws Exception {
         mockMvc.perform(put("/tasks/updateTaskPriority")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -149,6 +154,7 @@ public class TaskControllerTest {
     }
 
     @Test
+    @DisplayName("Update task name with null name")
     public void updateTaskPriorityWithNullId() throws Exception {
         mockMvc.perform(put("/tasks/updateTaskPriority")
                         .contentType(MediaType.APPLICATION_JSON)
