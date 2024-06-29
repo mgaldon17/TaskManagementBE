@@ -90,7 +90,7 @@ public class TaskControllerTest {
 
         mockMvc.perform(put("/tasks/1")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .param("name", "Test Task")
+                        .param("name", "Test 2")
                         .param("done", String.valueOf(false))
                         .param("created", "2022-01-01 00:00:00")
                         .param("priority", "URGENT"))
@@ -101,24 +101,10 @@ public class TaskControllerTest {
     }
 
     @Test
-    @DisplayName("Update task name by id")
-    public void updateTaskNameByIdTest() throws Exception {
-        when(taskService.updateTaskName(anyLong(), anyString())).thenReturn(HttpStatus.OK);
-
-        mockMvc.perform(put("/tasks/updateTaskName")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .param("id", "1")
-                        .param("newName", "Updated Task"))
-                .andExpect(status().isOk());
-
-        verify(taskService, times(1))
-                .updateTaskName(anyLong(), anyString());
-    }
-
-    @Test
     @DisplayName("Delete task by id")
     public void deleteTaskByIdTest() throws Exception {
-        when(taskService.deleteTaskById(anyLong())).thenReturn(HttpStatus.OK);
+        when(taskService.deleteTaskById(anyLong()))
+                .thenReturn(HttpStatus.OK);
 
         mockMvc.perform(delete("/tasks/1")
                         .contentType(MediaType.APPLICATION_JSON))
@@ -126,39 +112,5 @@ public class TaskControllerTest {
 
         verify(taskService, times(1))
                 .deleteTaskById(anyLong());
-    }
-
-    @Test
-    @DisplayName("Update task priority")
-    public void updateTaskPriorityTest() throws Exception {
-        when(taskService.updateTaskPriority(anyLong(), anyString())).thenReturn(HttpStatus.OK);
-
-        mockMvc.perform(put("/tasks/updateTaskPriority")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .param("id", "1")
-                        .param("newPriority", "LOW"))
-                .andExpect(status().isOk());
-
-        verify(taskService, times(1))
-                .updateTaskPriority(anyLong(), anyString());
-    }
-
-    @Test
-    @DisplayName("Update task name with empty name")
-    public void updateTaskPriorityWithEmptyPriority() throws Exception {
-        mockMvc.perform(put("/tasks/updateTaskPriority")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .param("id", "1")
-                        .param("newPriority", ""))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    @DisplayName("Update task name with null name")
-    public void updateTaskPriorityWithNullId() throws Exception {
-        mockMvc.perform(put("/tasks/updateTaskPriority")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .param("newPriority", "LOW"))
-                .andExpect(status().isBadRequest());
     }
 }

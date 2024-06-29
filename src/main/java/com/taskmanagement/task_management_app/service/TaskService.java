@@ -38,6 +38,10 @@ public class TaskService {
         return taskRepository.findAll();
     }
 
+    public Task getTaskById(Long id) {
+        return taskRepository.findById(id).orElse(null);
+    }
+
     public HttpStatus createTask(String name, Boolean done, String created, String priority) {
         Task newTask = Task.builder()
                 .name(name)
@@ -95,36 +99,14 @@ public class TaskService {
                 });
     }
 
-    public HttpStatus updateTaskName(Long id, String newName) {
-        return taskRepository.findById(id)
-                .map(task -> {
-                    task.setName(newName);
-                    taskRepository.save(task);
-                    log.warn("Task updated successfully: id={}, newName={}", id, newName);
-                    return HttpStatus.OK;
-                })
-                .orElseGet(() -> {
-                    log.warn("Task not found: id={}", id);
-                    return HttpStatus.NOT_FOUND;
-                });
-    }
-
-    public HttpStatus updateTaskPriority(Long id, String newPriority) {
-        return taskRepository.findById(id)
-                .map(task -> {
-                    task.setPriority(Priority.valueOf(newPriority));
-                    taskRepository.save(task);
-                    log.warn("Task updated successfully: id={}, newPriority={}", id, newPriority);
-                    return HttpStatus.OK;
-                })
-                .orElseGet(() -> {
-                    log.warn("Task not found: id={}", id);
-                    return HttpStatus.NOT_FOUND;
-                });
-    }
-
     private Instant toInstant(String created) {
         try {
+            //If date is entered in format 2022-01-01T00:00:00Z, replace T and Z with space if there are any
+
+            created = (created.contains("T") && created.contains("Z"))
+                    ? created.replace("T", " ").replace("Z", "")
+                    : created;
+
             DateTimeFormatter formatter = new DateTimeFormatterBuilder()
                     .appendPattern("yyyy")
                     .optionalStart().appendPattern("-MM").optionalEnd()
@@ -138,7 +120,9 @@ public class TaskService {
                     .parseDefaulting(ChronoField.MINUTE_OF_HOUR, 0)
                     .parseDefaulting(ChronoField.SECOND_OF_MINUTE, 0)
                     .toFormatter();
+
             LocalDateTime localDateTime = LocalDateTime.parse(created, formatter);
+
             return localDateTime.toInstant(ZoneOffset.UTC);
         } catch (DateTimeParseException e) {
             log.error("Invalid date format: date={}", created);
