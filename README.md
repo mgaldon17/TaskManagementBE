@@ -6,8 +6,6 @@ This is a simple Task Management application built with Spring Boot and PostgreS
 
 - Create a new task
 - Update an existing task
-- Update the name of a task
-- Update the priority of a task
 - Delete a task
 - Get all tasks
 
@@ -30,8 +28,6 @@ This is a simple Task Management application built with Spring Boot and PostgreS
 - `GET /tasks`: Fetch all tasks
 - `POST /tasks`: Create a new task. The request body should be a JSON object representing the task. Example: `{"name": "Task Name", "done": false, "created": "2022-01-01 00:00:00", "priority": "HIGH"}`
 - `PUT /tasks/{id}`: Update an existing task. The request body should be a JSON object representing the task. Example: `{"name": "New Task Name", "done": true, "created": "2022-01-01 00:00:00", "priority": "LOW"}`
-- `PUT /tasks/updateTaskName`: Update the name of a task. The request parameters should include `id` (the ID of the task) and `newName` (the new name of the task).
-- `PUT /tasks/updateTaskPriority`: Update the priority of a task. The request parameters should include `id` (the ID of the task) and `newPriority` (the new priority of the task).
 - `DELETE /tasks/{id}`: Delete a task
 
 ## Database
