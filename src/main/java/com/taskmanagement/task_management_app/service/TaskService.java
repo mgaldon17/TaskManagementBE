@@ -101,11 +101,15 @@ public class TaskService {
 
     private Instant toInstant(String created) {
         try {
-            //If date is entered in format 2022-01-01T00:00:00Z, replace T and Z with space if there are any
+            // If date is entered in format 2022-01-01T00:00:00Z, replace T and Z with space if there are any
 
             created = (created.contains("T") && created.contains("Z"))
                     ? created.replace("T", " ").replace("Z", "")
+                    : (created.contains("."))
+                    ? created.substring(0, created.indexOf("."))
                     : created;
+
+            created = created.contains(".") ? created.substring(0, created.indexOf(".")) : created;
 
             DateTimeFormatter formatter = new DateTimeFormatterBuilder()
                     .appendPattern("yyyy")
